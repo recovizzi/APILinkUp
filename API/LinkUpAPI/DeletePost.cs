@@ -5,6 +5,7 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
+using Azure.Storage.Blobs;
 using Newtonsoft.Json;
 using System.IO;
 using System;
@@ -15,6 +16,7 @@ public static class DeletePostFunction
 {
     private static IMongoCollection<Post> _postsCollection;
     private static IMongoCollection<User> _usersCollection;
+    private static IMongoCollection<Media> _mediaCollection;
 
     static DeletePostFunction()
     {
@@ -22,6 +24,7 @@ public static class DeletePostFunction
         var database = client.GetDatabase("SocialMediaDB");
         _postsCollection = database.GetCollection<Post>("posts");
         _usersCollection = database.GetCollection<User>("users");
+        _mediaCollection = database.GetCollection<Media>("media");
     }
 
     [FunctionName("DeletePost")]
@@ -62,23 +65,26 @@ public static class DeletePostFunction
         }
 
 
-        // if (result.DeletedCount > 0 && !string.IsNullOrEmpty(requestPost.MediaId))
-        // {
-        //     using (var httpClient = new HttpClient())
-        //     {
-        //         httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-        //         var mediaRequest = new { Id = requestPost.MediaId };
-        //         var mediaRequestJson = JsonConvert.SerializeObject(mediaRequest);
-        //         var request = new HttpRequestMessage
-        //         {
-        //             Method = HttpMethod.Delete,
-        //             RequestUri = new Uri(Environment.GetEnvironmentVariable("DeleteMediaURL")),
-        //             Content = new StringContent(mediaRequestJson, Encoding.UTF8, "application/json")
-        //         };
+        if (result.DeletedCount > 0 && !string.IsNullOrEmpty(requestPost.MediaId))
+        {
+            var mediaToDelete = await _mediaCollection.Find(m => m.Id == requestPost.MediaId).FirstOrDefaultAsync();
+            if (mediaToDelete != null)
+            {
+                if (!string.IsNullOrEmpty(mediaToDelete.Url))
+                {
+                    var blobServiceClient = new BlobServiceClient(Environment.GetEnvironmentVariable("AzureWebJobsStorage"));
+                    var blobUriBuilder = new BlobUriBuilder(new Uri(mediaToDelete.Url));
+                    var blobContainerClient = blobServiceClient.GetBlobContainerClient(blobUriBuilder.BlobContainerName);
+                    var blobClient = blobContainerClient.GetBlobClient(blobUriBuilder.BlobName);
 
-        //         await httpClient.SendAsync(request);
-        //     }
-        // }
+                    await blobClient.DeleteIfExistsAsync();
+                }
+
+                var deleteFilter = Builders<Media>.Filter.Eq(m => m.Id, requestPost.MediaId);
+                await _mediaCollection.DeleteOneAsync(deleteFilter);
+            }
+        }
+
 
         return new OkResult();
     }
