@@ -1,7 +1,7 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/azure/functions-action
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy dotnet core app to Azure Function App - LinkUpAPI
+name: Build and deploy dotnet core project to Azure Function App - linkupapi
 
 on:
   push:
@@ -11,11 +11,11 @@ on:
 
 env:
   AZURE_FUNCTIONAPP_PACKAGE_PATH: '.' # set this to the path to your web app project, defaults to the repository root
-  DOTNET_VERSION: '6.0.x' # set this to the dotnet version to use
+  DOTNET_VERSION: '8.0.x' # set this to the dotnet version to use
 
 jobs:
   build-and-deploy:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       - name: 'Checkout GitHub Action'
         uses: actions/checkout@v4
@@ -26,7 +26,7 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: 'Resolve Project Dependencies Using Dotnet'
-        shell: pwsh
+        shell: bash
         run: |
           pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
           dotnet build --configuration Release --output ./output
@@ -36,7 +36,7 @@ jobs:
         uses: Azure/functions-action@v1
         id: fa
         with:
-          app-name: 'LinkUpAPI'
+          app-name: 'linkupapi'
           slot-name: 'Production'
           package: '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/output'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_7593CC06DADB44D1AC6CA11DDAD61F3B }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_860DFCF202DE4C1BB7F0BFA30E4FB9F1 }}
