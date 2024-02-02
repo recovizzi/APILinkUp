@@ -82,7 +82,7 @@ public static class CreateMediaFunction
 
         await _mediaCollection.InsertOneAsync(media);
 
-        return new OkObjectResult(media);
+        return new OkObjectResult(new { mediaUrl, mediaType = media.Type });
     }
 
     private static string ValidateTokenAndGetUserId(string token)
