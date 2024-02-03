@@ -1,2 +1,2 @@
-# 4DESALinkUp
- LinkUp API for Azure
+# APILinkUp
+ LinkUp API exemple to try Azure Function export
