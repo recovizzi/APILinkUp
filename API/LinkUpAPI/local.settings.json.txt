@@ -5,7 +5,7 @@
         "AzureWebJobsStorage": "your azure storage account endpoint here",
         "FUNCTIONS_WORKER_RUNTIME": "dotnet",
         "MongoDBConnection": "your cosmodb account endpoint here",
-        "FUNCTIONS_EXTENSION_VERSION": "~3"
+        "FUNCTIONS_EXTENSION_VERSION": "~4"
     },
     "Host": {
         "CORS": "*",

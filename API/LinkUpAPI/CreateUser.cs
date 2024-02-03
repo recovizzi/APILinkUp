@@ -68,7 +68,6 @@ public class User
     [BsonRepresentation(BsonType.ObjectId)]
     public string Id { get; set; }
     public string Username { get; set; }
-    public string PasswordHash { get; set; } // Storing the hash of the password, not the password itself
+    public string PasswordHash { get; set; }
     public string Email { get; set; }
-    // Add other properties as needed
 }

@@ -48,10 +48,9 @@ public static class CreatePostFunction
 
         string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
         var post = JsonConvert.DeserializeObject<Post>(requestBody);
-        post.UserId = userId; // Set the user ID from the token
+        post.UserId = userId;
         post.Timestamp = DateTime.UtcNow;
 
-        // Check if media is included and valid
         if (!string.IsNullOrEmpty(post.MediaId))
         {
             // Validate or process the media ID if necessary

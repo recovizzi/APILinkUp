@@ -69,8 +69,6 @@ public static class UpdatePostFunction
             updateDefinitions.Add(update.Set(p => p.MediaId, updatedPost.MediaId));
         }
 
-        // Add other fields to update as needed
-
         if (updateDefinitions.Count == 0)
         {
             return new BadRequestObjectResult("No fields to update were provided.");

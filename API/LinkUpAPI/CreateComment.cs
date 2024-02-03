@@ -59,11 +59,11 @@ public static class CreateCommentFunction
             var filter = Builders<User>.Filter.Eq(u => u.Username, decodedUsername);
             var user = _usersCollection.Find(filter).FirstOrDefault();
 
-            return user?.Id; // Retourne l'ID de l'utilisateur si trouvé, sinon null
+            return user?.Id;
         }
         catch
         {
-            return null; // Retourne null en cas d'erreur
+            return null;
         }
     }
 

@@ -48,24 +48,21 @@ public static class CreateMediaFunction
             return new UnauthorizedResult();
         }
 
-        // Handle media file upload
         var formdata = await req.ReadFormAsync();
         var file = req.Form.Files["file"];
         if (file == null || file.Length == 0)
         {
             return new BadRequestObjectResult("No file was uploaded.");
         }
-
-        // Generate a unique file name for storage
+        
         var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-        // Vérifier si le conteneur existe, sinon le créer
+        
         var blobServiceClient = new BlobServiceClient(Environment.GetEnvironmentVariable("AzureWebJobsStorage"));
         var blobContainerClient = blobServiceClient.GetBlobContainerClient("media");
         await blobContainerClient.CreateIfNotExistsAsync();
 
         var blobClient = new BlobClient(Environment.GetEnvironmentVariable("AzureWebJobsStorage"), "media", fileName);
 
-        // Upload the file
         using (var stream = file.OpenReadStream())
         {
             await blobClient.UploadAsync(stream, true);

@@ -65,8 +65,6 @@ public static class UpdateUserFunction
             updateDefinitions.Add(update.Set(u => u.Email, updatedUser.Email));
         }
 
-        // Add other fields to update as needed
-
         if (updateDefinitions.Count == 0)
         {
             return new BadRequestObjectResult("No fields to update were provided.");
